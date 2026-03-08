@@ -18,6 +18,7 @@ public class HashMap<K,V> {
     //for storing the key-value pairs. Each bucket can contain a linked list of nodes in case of collisions.
     private Node<K,V>[] buckets;
     private int size;
+    private final double loadFactor = 0.75;
 
     // class constructor
     @SuppressWarnings("unchecked")
@@ -47,6 +48,9 @@ public class HashMap<K,V> {
     //  */
 
     public void put(K key , V value){
+         if(size/capacity >= loadFactor){
+            resize();
+        }
         int index = hash(key);
         Node<K,V> head = buckets[index];
         Node<K,V> current = head;
@@ -79,6 +83,27 @@ public class HashMap<K,V> {
             current = current.next;
         }
         return null; // return null if key is not found
+    }
+    // resize when the laod facor is exceeded
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        // Need to rezie when the load factor is exceeded
+       int  newcapacity = capacity*2;
+        Node<K,V>[] newBuckets = new Node[newcapacity];
+        // I need to rehash all the existing key-value pairs into the new bucket array
+        for(int i=0;i<capacity;++i){
+            Node<K,V> current = buckets[i];
+            while(current!=null){
+                Node<K,V> next = current.next; // store the next node before rehashing
+                int newIndex = Math.abs(current.key.hashCode() % newcapacity);
+                // Insert the current node into the new bucket array
+                current.next = newBuckets[newIndex];
+                newBuckets[newIndex] = current;
+                current = next; // move to the next node in the old bucket  
+            }
+        }
+        buckets = newBuckets; // replace the old bucket array with the new one
+        capacity = newcapacity; // update the capacity
     }
 
     // Operation 3 will be contains
