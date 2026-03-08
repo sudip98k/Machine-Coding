@@ -48,7 +48,7 @@ public class HashMap<K,V> {
     //  */
 
     public void put(K key , V value){
-         if(size/capacity >= loadFactor){
+         if((double)size/capacity >= loadFactor){
             resize();
         }
         int index = hash(key);
